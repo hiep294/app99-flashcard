@@ -1,0 +1,210 @@
+redux crash course:
+  https://www.youtube.com/watch?v=93p3LxR9xfM&t=2166s
+// video number 5
+sth about rem
+watching redux in smaller example:
+up plan: https://www.youtube.com/watch?v=wZVzeob4ywc
+
+store => db?
+action => model?
+reducer => controller?
+component => view?
+
+store.dispatch({ type: 'ADD' })
+
+////////////////////REDUX WITH REACT//////////////////
+/////USED LIBRARIES FOR OVERVIEW:
+  + redux=> main redux
+    + createStore(reducer, [preloadedState], [enhancer])
+      + reducer(): a method
+      + [preloadedState]: a object {},
+      + [enhancer]: can be `applyMiddleware()`
+    + reducer: do action
+    + applyMiddleware(...[thunk]): apply many middlewares, include thunk
+    + combineReducers({}): a method is to combine reducers
+  + react-redux=> connect react with redux, redux its self does not connect to react
+    + Provider => need to wrap App, and provide a store which holds whole state tree  
+      + `store` prop: is connected a store which is created by redux 
+    + connect => be used in component, connect component to redux store
+      + source: https://react-redux.js.org/api/connect
+      + structure: function connect(mapStateToProps?, mapDispatchToProps?, mergeProps?, options?)
+      + mapDispatchToProps?: everytime the store updated, this method will be called, dispatch is defined in action file
+      + mapStateToProps: map class's state to props
+  + redux-thunk => provide more middleware 'thunk' for redux
+
+/////FILES AND FOLDERS
+store.js > export `store` for app, hold whole state of app
+  - const `store` is created by method `createStore(reducer, [preloadedState], [enhancer])` of `redux` LIB
+    + `reducer` should be get from reducers folder
+    + [preloadedState] : is initialState(bigState)
+    + [enhancer] can be middleware
+      . ex: applyMiddleware(...middleware) #parameter should be a middleware, not an array of middlewares
+        .middleware = [thunk]
+          `thunk` is a middleware which is exported from library 'redux-thunk'
+
+//
+reducers folder
+  index.js to combine all reducers
+    `combineReducers({})` method of redux lib: combine all reducers
+  a reducer as a method => return an object which include definition-method reducers 
+
+//   
+other terms:  
+  payload: considered as data
+  dispatch: a callback function
+
+//
+`method`: 
+function fetchPosts() {
+  return function(dispatch) {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(res => res.json())
+      .then(posts => dispatch({
+        type: FETCH_POSTS,
+        payload: posts
+      }))
+  }
+}
+=> do the same as:
+export const fetchPosts = () => dispatch => {  
+  fetch('https://jsonplaceholder.typicode.com/posts')
+    .then(res => res.json())
+    .then(posts => dispatch({
+      type: FETCH_POSTS,
+      payload: posts
+    }))  
+}
+
+//
+after setting a small thing from tutorial
+reorder code with own structure and understanding
+but when do teamwork, should convert to other one
+
+// should expect finding a piece of picture from a source rather than a whole picture from a source, > can avoid disappointing
+
+next source in https://redux.js.org/basics/example
+
++bigState or application's state is defined in reducers
+index.js
+  +combineReducers(bigState)
+  +each reducer file will define new small state after doing action
+
+:should follow the form in official website for long time, but also watch the tutorial video at the begining of learn 
+
+sometime, ordering of import module is necessary
+
+const todos = (smallState = initialSmallState, action) in ES6, means in default `smallState` is `initialSmallState`
+
+const ob = {
+  demo: 2,
+  demo: 3
+} 
+the second demo will be chosen
+
+`smallState` of post reducer is main part of actual state in Post component, so can be is array-[] or object-{} or variable 
+
+actions: connect to db
+reducers: manage main parts of small states
+  index.js: consider main part of big state
+store.js: connect reducers and actions through components
+
+* export default connect()(ComponentName) will map `dispatch` method of store to the props, when call this dispatch(action), it will do that action 
+
+const mapDispatchToProps = dispatch => ({
+  toggleTodo: id => dispatch(toggleTodo(id))
+})// the parameter `dispatch` is the `dispatch` method of the store
+
+action is actually a object {type: '', sth: 'something else'}, before return this action, it is able to fetch data from back-end service
+
+root of reducer will return the big state and it will be saved in redux store
+
+store.dispatch(action) is called, store calls ALL reducer functions, pass two arguments to reducer: action as the second argument, the current branch state (which is handled by that reducer) as the first argument. 
+CONCLUDE: action and reducer can be named relative (like PostActions, PostReducers), but any action will be passed to all reduces
+
+next plan: consider write a pure combineReducers which is define in here:
+https://redux.js.org/basics/reducers
+
+`dispatch` can be considered as `action` package
+
+in their design, they will put mapStateToProps and mapDispatchToProps in another file, eg: VisibleTodoList and App and TodoList
+
+component: <Todo key={todo.id} {...todo} onClick={() => toggleTodo(todo.id)} />
+for example: todo{id:3, text: 'Weak up', completed: true}
+by writting {...todo} is equal to id={todo.id} text={todo.text} completed={text.completed}
+
+reducers are methods, and when these methods is called, it will return states
+
+when dispatch(action) is called, it will call all reducers
+
+export default connect()(TopicList)
+=> has `dispatch` method in props
+export default connect(mapStateToProps, mapDispatchToProps)(TopicList)
+=> props will not include `dispatch` method
+
+maybe there is not componentDidMount() for functional component
+
+next plan: fetch data from back-end service
+
+next plan: 
++home
++create D of a topic
++Show a topic
+
+{} => still is truthy
+
+in own design, action will pass type and payload to corresponding reducer. Of course, when doing an action, every reducers will be called
+
+next plan:
++ use Redux for only definition of page, the page is HomePage or TopicDetailPage or sth else
+
+next plan
++ animation when delete an item is not nice
+=> FIX: put component go down value of opacity when user click to delete,
+and when delete successfully, it will go
+
+next plan:
++ take a crash graphQL course
+
+what is used usually, should be researched in detail, other should not be researched too much
+
+graphiql: is a tool to make request graphql
+schema.js:
+  + RootQuery: to fetch data
+  + mutation: to edit, delete, add data
+
+ApolloClient
+ApolloProvider
+
+launches.js
+  +gql
+
+
+20.29: install CORS
+
+
+
+
+
+
+self-evaluate:
+
+lesson learned:
++ basic concept of redux: Provider, store, connect, reducer, actions, without any middleware
++ basic redux in use: when need to combine resources, eg: add to cart, add to book basket, define page etc. 
++ how to design code better
+
+references: 
+youtube: MERN-stack Traversy Media, coders tokyo 
+website tutorial: https://redux.js.org/
+website idea: quizlet.com
+layout: https://bootswatch.com/
+
+technology:
+Backend service: ExpressJS
+Database: MongoDB
+Frontend service: ReactJS, basic Redux
+
+https://www.youtube.com/watch?v=-XwkFm5a9lw
+
+for google speech:
+  https://www.youtube.com/watch?v=DOtkNxmg9QY
